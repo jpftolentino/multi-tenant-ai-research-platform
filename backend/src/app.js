@@ -1,13 +1,13 @@
 const express = require("express");
-
 const app = express();
 
-// Middleware to let Express read JSON request bodies later
-app.use(express.json());
+const healthRoutes = require("./routes/healthRoutes");
+const authRoutes = require("./routes/authRoutes");
+const jobRoutes = require("./routes/jobRoutes");
 
-// Basic health check route
-app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
-});
+app.use(express.json());
+app.use("/", healthRoutes);
+app.use("/auth", authRoutes);
+app.use("/", jobRoutes);
 
 module.exports = app;
