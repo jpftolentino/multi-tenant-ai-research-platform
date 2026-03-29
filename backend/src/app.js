@@ -10,4 +10,12 @@ app.use("/", healthRoutes);
 app.use("/auth", authRoutes);
 app.use("/jobs", jobsRoutes);
 
+//Test Coonection Route
+const pool = require("./config/db");
+
+app.get("/test-db", async (req,res) => {
+    const result = await pool.query("SELECT * FROM users");
+    res.json(result.rows);
+});
+
 module.exports = app;
