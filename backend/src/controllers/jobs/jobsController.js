@@ -1,24 +1,47 @@
 const pool = require("../../config/db");
 
 const createJob = async (req, res) => {
-    const { input } = req.body;
+    try {
+        const { input } = req.body;
+        const userId = req.user.userId;
 
-    const result = await pool.query(
-        "INSERT INTO jobs (user_id, input) VALUES ($1, $2) RETURNING *",
-        [1, input]
-    );
+        if (!input || !input.trim()) {
+            return res.status(400).json({
+                message: "Input is required"
+            });
+        }
 
-    res.json(result.rows[0])
+        const result = await pool.query(
+            "INSERT INTO jobs (user_id, input, status) VALUES ($1, $2, $3) RETURNING *",
+            [userId, input, "pending"]
+        );
+
+        return res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Internal Server Error"
+        });
+    }
 };
 
 const getJobs = async (req, res) => {
-    const result = await pool.query(
-        "SELECT * FROM jobs WHERE user_id = $1 ORDER BY created_at DESC",
-        [1]
-    );
+    try {
+        const userId = req.user.userId;
 
-    res.json(result.rows);
-}
+        const result = await pool.query(
+            "SELECT * FROM jobs WHERE user_id = $1 ORDER BY created_at DESC",
+            [userId]
+        );
+
+        return res.status(200).json(result.rows);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Internal Server Error"
+        });
+    }
+};
 
 
 module.exports = { 
