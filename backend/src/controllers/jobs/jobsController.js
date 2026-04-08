@@ -1,4 +1,5 @@
 const pool = require("../../config/db");
+const jobQueue = require("../../queues/jobQueue");
 
 const createJob = async (req, res) => {
     try {
@@ -15,6 +16,14 @@ const createJob = async (req, res) => {
             "INSERT INTO jobs (user_id, input, status) VALUES ($1, $2, $3) RETURNING *",
             [userId, input, "pending"]
         );
+
+        const createdJob = result.rows[0];
+
+        await jobQueue.add("processJob", {
+            jobId: createdJob.id,
+            userId: createdJob.user_id,
+            input: createdJob.input
+        });
 
         return res.status(201).json(result.rows[0]);
     } catch (error) {
