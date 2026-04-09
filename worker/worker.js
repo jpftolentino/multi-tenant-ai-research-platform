@@ -16,17 +16,57 @@ const worker = new Worker(
             ["running", jobId]
         );
 
-        console.log(`Job ${job.data.jobId} is running`);
 
-        await new Promise((resolve) => setTimeout(resolve, 3000)); // simulate work with a delay
+        try {
+            const { rows }  = await pool.query(
+                "SELECT * FROM jobs WHERE id = $1",
+                [jobId]
+            );
 
+            if (rows.length === 0) {
+                throw new Error("Could not find job");
+            }
 
-        await pool.query(
-            "UPDATE jobs SET status = $1 WHERE id = $2",
-            ["completed", jobId]
-        );
+            const jobInput = rows[0].input;
 
-        console.log(`Job ${job.data.jobId} completed`);
+            const response = await fetch("http://localhost:11434/api/generate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+                body: JSON.stringify({
+                    model: "llama3",
+                    prompt: `Summarize the following research text:\n\n${jobInput}`,
+                    stream: false,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Ollama request failed with status ${response.status}`);
+            }            
+
+            const data = await response.json();
+
+            await pool.query(
+                "UPDATE jobs SET result = $1 WHERE id = $2",
+                [data.response, jobId]
+            );
+            
+
+            await pool.query(
+                "UPDATE jobs SET status = $1 WHERE id = $2",
+                ["completed", jobId]
+            );
+
+            console.log(`Job ${jobId} completed`);       
+
+        } catch (error) {
+            await pool.query(
+                "UPDATE jobs SET status = $1 WHERE id = $2",
+                ["failed", jobId]
+            );
+            console.log(error);
+        }
 
     },
     { connection }
