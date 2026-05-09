@@ -1,8 +1,8 @@
-function JobCard() {
+function JobCard({ job }) {
   return (
     <div>
-      <h3>Example Job</h3>
-      <p>Status: pending</p>
+      <h3>{job.input}</h3>
+      <p>JobId: {job.id} Status: {job.status}</p>
     </div>
   );
 }

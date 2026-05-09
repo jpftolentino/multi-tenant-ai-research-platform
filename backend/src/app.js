@@ -1,9 +1,14 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 
 const healthRoutes = require("./routes/healthRoutes");
 const authRoutes = require("./routes/auth/authRoutes");
 const jobsRoutes = require("./routes/jobs/jobsRoutes");
+
+app.use(cors({
+    origin: "http://localhost:5173"
+}));
 
 app.use(express.json());
 app.use("/", healthRoutes);
