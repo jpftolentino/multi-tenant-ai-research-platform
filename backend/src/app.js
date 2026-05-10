@@ -6,9 +6,15 @@ const healthRoutes = require("./routes/healthRoutes");
 const authRoutes = require("./routes/auth/authRoutes");
 const jobsRoutes = require("./routes/jobs/jobsRoutes");
 
-app.use(cors({
-    origin: "http://localhost:5173"
-}));
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim());
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+  })
+);
 
 app.use(express.json());
 app.use("/", healthRoutes);
