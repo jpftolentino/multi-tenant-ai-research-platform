@@ -13,7 +13,7 @@ function JobList({ token, refreshJobs }) {
       setError("");
 
       try {
-        const response = await fetch("http://localhost:5000/jobs" ,{
+        const response = await fetch("http://localhost:5001/jobs" ,{
           headers: {
             Authorization: `Bearer ${token}`
           }

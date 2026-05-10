@@ -10,7 +10,7 @@ function JobForm({ token, onJobCreated }) {
     if (!input.trim()) return;
     
     try {
-      const response = await fetch("http://localhost:5000/jobs",{
+      const response = await fetch("http://localhost:5001/jobs",{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
