@@ -5,12 +5,14 @@ import JobList from "./components/JobList";
 import './App.css'
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem("token") || "";
+  });
   const [refreshJobs, setRefreshJobs] = useState(false);
   
   function handleJobCreated() {
     setRefreshJobs((prev) => !prev);
-  }  
+  }
 
   return (
     <main>

@@ -54,8 +54,8 @@ function LoginForm({ setToken }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">
-          Login
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
     </div> 

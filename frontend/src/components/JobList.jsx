@@ -4,9 +4,14 @@ import JobCard from "./JobCard";
 
 function JobList({ token, refreshJobs }) {
   const [jobs, setJobs] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchJobs = async () => {
+      setIsLoading(true);
+      setError("");
+
       try {
         const response = await fetch("http://localhost:5000/jobs" ,{
           headers: {
@@ -22,6 +27,9 @@ function JobList({ token, refreshJobs }) {
         setJobs(data);  
       } catch (error) {
         console.log("Job list error:", error);
+        setError("Could not load jobs.");
+      } finally {
+        setIsLoading(false);
       }
     };
       
@@ -32,9 +40,16 @@ function JobList({ token, refreshJobs }) {
   return (
     <div>
       <h2>Your Jobs</h2>
-      {jobs.length === 0 ? (
+
+      {isLoading && <p>Loading jobs...</p>}
+
+      {error && <p>{error}</p>}
+
+      {!isLoading && !error && jobs.length === 0 && (
         <p>No jobs yet.</p>
-      ) : (
+      )}
+
+      {!isLoading && !error && jobs.length > 0 && (
         jobs.map((job) => (
           <JobCard key={job.id} job={job} />
         ))

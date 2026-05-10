@@ -6,6 +6,8 @@ function JobForm({ token, onJobCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!input.trim()) return;
     
     try {
       const response = await fetch("http://localhost:5000/jobs",{
