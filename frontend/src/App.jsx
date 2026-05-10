@@ -8,23 +8,21 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [refreshJobs, setRefreshJobs] = useState(false);
   
+  function handleJobCreated() {
+    setRefreshJobs((prev) => !prev);
+  }  
 
   return (
     <main>
       <h1>AI Research Platform</h1>
-
-      {token ? (
-        <>
-          <JobForm 
-            token={token}
-            onJobCreated={() => setRefreshJobs((prev) => !prev)}
-          />
-          <JobList token={token} refreshJobs={refreshJobs}/>
-        </>
-      ) : (
+      {!token ? (
         <LoginForm setToken={setToken} />
+      ) : (
+        <>
+          <JobForm token={token} onJobCreated={handleJobCreated} />
+          <JobList token={token} refreshJobs={refreshJobs} />
+        </>
       )}
-      
     </main>
   );
 }
