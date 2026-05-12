@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { API_BASE_URL } from "../config";
 
-function JobForm({ token, onJobCreated }) {
+function JobForm({ token, onJobCreated, onAuthError }) {
 
   const [input, setInput] = useState("");
 
@@ -10,7 +11,7 @@ function JobForm({ token, onJobCreated }) {
     if (!input.trim()) return;
     
     try {
-      const response = await fetch("http://localhost:5001/jobs",{
+      const response = await fetch(`${API_BASE_URL}/jobs`,{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -21,6 +22,11 @@ function JobForm({ token, onJobCreated }) {
         })
 
       });
+
+      if (response.status === 401) {
+        onAuthError();
+        return;
+      }
 
       if (!response.ok) {
         throw new Error("Job creation failed");

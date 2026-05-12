@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
+import { API_BASE_URL } from "../config";
 
 import JobCard from "./JobCard";
 
-function JobList({ token, refreshJobs }) {
+function JobList({ token, refreshJobs, onAuthError}) {
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -13,11 +14,16 @@ function JobList({ token, refreshJobs }) {
       setError("");
 
       try {
-        const response = await fetch("http://localhost:5001/jobs" ,{
+        const response = await fetch(`${API_BASE_URL}/jobs`,{
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
+
+        if (response.status === 401) {
+          onAuthError();
+          return;
+        }
 
         if (!response.ok) {
           throw new Error("Get Job failed");
@@ -34,7 +40,7 @@ function JobList({ token, refreshJobs }) {
     };
       
     fetchJobs();
-  }, [token, refreshJobs]);
+  }, [token, refreshJobs, onAuthError]);
 
 
   return (

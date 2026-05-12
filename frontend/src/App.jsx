@@ -10,6 +10,11 @@ function App() {
   });
   const [refreshJobs, setRefreshJobs] = useState(false);
   
+  const logout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+  };
+
   function handleJobCreated() {
     setRefreshJobs((prev) => !prev);
   }
@@ -21,8 +26,8 @@ function App() {
         <LoginForm setToken={setToken} />
       ) : (
         <>
-          <JobForm token={token} onJobCreated={handleJobCreated} />
-          <JobList token={token} refreshJobs={refreshJobs} />
+          <JobForm token={token} onJobCreated={handleJobCreated} onAuthError={logout}/>
+          <JobList token={token} refreshJobs={refreshJobs} onAuthError={logout}/>
         </>
       )}
     </main>
